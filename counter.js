@@ -5,12 +5,9 @@ period = localStorage.getItem('period') ? localStorage.getItem('period') : 'Work
 
 window.addEventListener('load', (event) => {
 	document.getElementById('button').addEventListener('click', (event) => { buttonClicked() })
-	document.getElementById('button').innerHTML = timerRunning ? 'Pause' : 'Play'
 	document.getElementById('reset').addEventListener('click', (event) => { resetTimer() })
-	document.getElementById('period').innerHTML = period
-	document.body.style.backgroundColor = (period == 'Working') ? 'lightblue' : 'pink'
 	runInterval()
-
+	updateDom()
 	updateTime()
 })
 
@@ -20,10 +17,23 @@ function updateLocalStorage() {
 	localStorage.setItem('lastUpdatedSecond', lastUpdatedSecond)
 }
 
+function updateDom() {
+	document.getElementById('period').innerHTML = period
+	document.body.style.backgroundColor = (period == 'Working') ? 'lightblue' : 'pink'
+	document.getElementById('button').innerHTML = timerRunning ? 'Pause' : 'Play'
+
+	// formatting time
+	timeString = ''
+	timeString += Math.floor(timeLeft / 60) + ':'
+	timeString += (timeLeft % 60 > 9) ? timeLeft % 60 : '0' + timeLeft % 60
+	document.getElementById('time').innerHTML = timeString
+}
+
 function resetTimer() {
 	timeLeft = 1500
 	lastUpdatedSecond = Math.floor(new Date() / 1000)
 	updateLocalStorage()
+	updateDom()
 }
 
 function buttonClicked() {
@@ -34,27 +44,21 @@ function buttonClicked() {
 	// play or pause
 	timerRunning = !timerRunning
 
-	document.getElementById('button').innerHTML = timerRunning ? 'Pause' : 'Play'
-
-	localStorage.setItem('timerRunning', timerRunning)
+	updateLocalStorage()
+	updateDom()
 }
 
 function changeState() {
-
 	period = (period == 'Working') ? 'Break' : 'Working'
-
-	document.getElementById('period').innerHTML = period
-	document.body.style.backgroundColor = (period == 'Working') ? 'lightblue' : 'pink'
 	timeLeft = (period == 'Working') ? 1500 : 300
 	updateLocalStorage()
+	updateDom()
 }
 
 function runInterval() {
-	interval = setInterval(
-		function () {
-			updateTime()
-		}, 1000
-	)
+	interval = setInterval(function () {
+		updateTime()
+	}, 1000)
 }
 
 function updateTime() {
@@ -71,15 +75,9 @@ function updateTime() {
 			changeState()
 		}
 
-		// last updated now
 		lastUpdatedSecond = seconds
 
 		updateLocalStorage()
-
-		// update dom
-		timeString = ''
-		timeString += Math.floor(timeLeft / 60) + ':'
-		timeString += (timeLeft % 60 > 9) ? timeLeft % 60 : '0' + timeLeft % 60
-		document.getElementById('time').innerHTML = timeString
+		updateDom()
 	}
 }

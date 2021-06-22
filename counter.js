@@ -1,4 +1,4 @@
-timerRunning = localStorage.getItem('timerRunning') ? localStorage.getItem('timerRunning') : false
+timerRunning = localStorage.getItem('timerRunning') ? (localStorage.getItem('timerRunning') == 'true') : false
 timeLeft = localStorage.getItem('timeLeft') ? localStorage.getItem('timeLeft') : 1500
 lastUpdatedSecond = localStorage.getItem('lastUpdatedSecond') ? localStorage.getItem('lastUpdatedSecond') : null
 period = localStorage.getItem('period') ? localStorage.getItem('period') : 'Working'
@@ -15,6 +15,7 @@ function updateLocalStorage() {
 	localStorage.setItem('timerRunning', timerRunning)
 	localStorage.setItem('timeLeft', timeLeft)
 	localStorage.setItem('lastUpdatedSecond', lastUpdatedSecond)
+	localStorage.setItem('period', period)
 }
 
 function updateDom() {
@@ -32,6 +33,7 @@ function updateDom() {
 function resetTimer() {
 	timeLeft = 1500
 	lastUpdatedSecond = Math.floor(new Date() / 1000)
+	period = 'Working'
 	updateLocalStorage()
 	updateDom()
 }
@@ -66,7 +68,7 @@ function updateTime() {
 	seconds = Math.floor(new Date() / 1000)
 
 	// if we are running and the time is different
-	if (timerRunning && timeLeft != seconds) {
+	if (timerRunning && (lastUpdatedSecond != seconds)) {
 
 		// time left is the remaining seconds in the timer
 		timeLeft = timeLeft - (seconds - lastUpdatedSecond)
